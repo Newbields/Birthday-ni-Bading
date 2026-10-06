@@ -45,7 +45,7 @@
     overflow-wrap: break-word;
   }
   pre {
-    font-size: 1rem;
+    font-size: clamp(.95rem, 4vw, 1.1rem);
     font-family: Handlee, "Comic Sans MS", cursive;
     text-align: center;
     white-space: pre-wrap; /* wraps long lines on small screens */
@@ -97,7 +97,31 @@
     backface-visibility: hidden;
   }
   .back { transform: rotateY(180deg); }
-  .hint { font-size: 30px; opacity: .75; margin: 1rem 0 0; text-align: left;}
+
+  /* Front face: keep content centered even when the card stretches to match the back */
+  .front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Swipe hint: text size and arrow image scale with the screen */
+  .hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    margin-top: clamp(1.5rem, 8vw, 3rem);
+    font-family: Handlee, "Comic Sans MS", cursive;
+    font-size: clamp(1.2rem, 6vw, 1.9rem);
+    opacity: .75;
+  }
+  .hint img {
+    width: clamp(56px, 20vw, 80px);
+    height: auto;
+    max-width: 100%;
+  }
   .actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
 
   @media (max-width: 480px) {
@@ -142,10 +166,10 @@
       <section class="card face front" id="front">
         <div class="cake">🎂</div>
         <h1>Happy Birthday, Lia!</h1>
-        <br> <br> <br>
-        <pre class="hint">
-      SWIPE RIGHT
-              <img src="arrows.png" width="80" height="80"></pre>
+        <div class="hint">
+          <span>SWIPE RIGHT</span>
+          <img src="arrows.png" alt="">
+        </div>
       </section>
 
       <!-- Back (hidden from keyboard/screen readers until flipped) -->
