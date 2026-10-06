@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Happy Birthday!</title>
+<style>
+  :root {
+    --bg: #2b1a4a;
+    --card: #fff7ec;
+    --ink: #2b1a4a;
+    --pink: #ff5c8a;
+    --yellow: #ffc93c;
+    --teal: #2ec4b6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh; /* accounts for mobile browser toolbars */
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+             max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    overflow-x: hidden;
+  }
+  .card {
+    background: var(--card);
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 8px 8px 0 var(--pink);
+    position: relative;
+    z-index: 2;
+  }
+  h1 {
+    margin: 0 0 .5rem;
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+    line-height: 1.15;
+    overflow-wrap: break-word;
+  }
+  pre {
+    font-size: 1rem;
+    font-family: Handlee, "Comic Sans MS", cursive;
+    text-align: center;
+    white-space: pre-wrap; /* wraps long lines on small screens */
+    overflow-wrap: break-word;
+    margin: 1rem 0;
+    line-height: 1.5;
+  }
+  p { line-height: 1.5; margin: .5rem 0 1.2rem; }
+  input, button {
+    font: inherit;
+    font-size: 16px; /* 16px+ prevents iOS from zooming in on focus */
+    min-height: 48px; /* comfortable tap target */
+    padding: .7rem 1rem;
+    border-radius: 10px;
+    border: 2px solid var(--ink);
+  }
+  input { width: 100%; margin-bottom: .8rem; background: #fff; }
+  input:focus-visible, button:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+  button {
+    background: var(--yellow);
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover { background: var(--pink); color: #fff; }
+  .error { color: #c0183f; min-height: 1.4em; margin: 0 0 .5rem; font-size: .95rem; }
+  .shake { animation: shake .4s; }
+  @keyframes shake {
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .cake { font-size: clamp(3rem, 16vw, 4rem); }
+
+  /* ---------- Flip card ---------- */
+  .scene {
+    width: 100%;
+    max-width: 420px;
+    perspective: 1200px;
+    touch-action: pan-y; /* keep vertical scrolling, let us read horizontal swipes */
+  }
+  .flip {
+    display: grid;               /* both faces share one cell, so height = taller face */
+    transform-style: preserve-3d;
+    transition: transform .7s cubic-bezier(.4, .2, .2, 1);
+  }
+  .flip.flipped { transform: rotateY(180deg); }
+  .face {
+    grid-area: 1 / 1;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .back { transform: rotateY(180deg); }
+  .hint { font-size: 30px; opacity: .75; margin: 1rem 0 0; text-align: left;}
+  .actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
+
+  @media (max-width: 480px) {
+    .card { padding: 1.5rem 1.1rem; box-shadow: 5px 5px 0 var(--pink); }
+    button { width: 100%; }
+    .actions button { flex: 1 1 100%; }
+  }
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    z-index: 1;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .confetti, .shake { animation: none; }
+    .flip { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Locked screen -->
+<main class="card" id="lock">
+  <h1>Sikret lang</h1>
+  <p>Enter the password to open</p>
+  <input type="password" id="pw" placeholder="Password" autocomplete="off">
+  <p class="error" id="error" role="alert"></p>
+  <button id="unlock">Open</button>
+</main>
+
+<!-- Secret content: kept inside a template so it isn't shown until unlocked -->
+<template id="secret">
+  <main class="scene" id="scene">
+    <div class="flip" id="flip">
+
+      <!-- Front -->
+      <section class="card face front" id="front">
+        <div class="cake">🎂</div>
+        <h1>Happy Birthday, Lia!</h1>
+        <br> <br> <br>
+        <pre class="hint">
+      SWIPE RIGHT
+              <img src="arrows.png" width="80" height="80"></pre>
+      </section>
+
+      <!-- Back (hidden from keyboard/screen readers until flipped) -->
+      <section class="card face back" id="back" inert>
+        <h1>Happy Birthday, Lia!</h1>
+        <hr>
+<pre>Hello po ate!!!
+First of all Happy Birthday sayo
+Hindi q knows sasabihin q
+Basta just keep doing what you think is good
+para sayo, andito lang me if you need anything
+MWEHEHEHEHEH
+
+<strong>HAPPY BIRTHDAY PO ULI ATE!!!</strong>
+
+Official na, nasa twenties na sya
+HAHAHHAHAHA</pre>
+        <div class="actions">
+        </div>
+      </section>
+
+    </div>
+  </main>
+</template>
+
+<script>
+  // Change this to your own password
+  const PASSWORD = "badingsilia";
+
+  const lock = document.getElementById("lock");
+  const input = document.getElementById("pw");
+  const error = document.getElementById("error");
+
+  function tryUnlock() {
+    if (input.value === PASSWORD) {
+      const content = document.getElementById("secret").content.cloneNode(true);
+      lock.replaceWith(content);
+      setupFlip();
+      confetti();
+    } else {
+      error.textContent = "That's not the password. Try again.";
+      lock.classList.remove("shake");
+      void lock.offsetWidth; // restart animation
+      lock.classList.add("shake");
+      input.select();
+    }
+  }
+
+  function setupFlip() {
+    const scene = document.getElementById("scene");
+    const flip = document.getElementById("flip");
+    const front = document.getElementById("front");
+    const back = document.getElementById("back");
+
+    function toggle() {
+      const flipped = flip.classList.toggle("flipped");
+      front.inert = flipped;   // only the visible side can be focused
+      back.inert = !flipped;
+      if (flipped) confetti();
+    }
+
+    // Swipe left or right to flip
+    let startX = 0, startY = 0;
+    scene.addEventListener("touchstart", e => {
+      startX = e.changedTouches[0].clientX;
+      startY = e.changedTouches[0].clientY;
+    }, { passive: true });
+    scene.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) toggle();
+    }, { passive: true });
+  }
+
+  function confetti() {
+    const colors = ["#ff5c8a", "#ffc93c", "#2ec4b6", "#ffffff"];
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confetti";
+      piece.style.left = Math.random() * 100 + "vw";
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = 2 + Math.random() * 3 + "s";
+      piece.style.animationDelay = Math.random() * 0.8 + "s";
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 6000);
+    }
+  }
+
+  document.getElementById("unlock").addEventListener("click", tryUnlock);
+  input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+  input.focus();
+</script>
+</body>
+</html>
